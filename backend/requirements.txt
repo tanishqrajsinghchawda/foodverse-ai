@@ -1,0 +1,17 @@
+# Backend framework and API utilities
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+
+# AI and LLM inference
+groq
+
+# Computer vision and image processing
+opencv-python-headless
+pillow
+numpy
+
+# Configuration and reporting utilities
+python-dotenv
+fpdf2

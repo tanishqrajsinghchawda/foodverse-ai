@@ -1,0 +1,19 @@
+# Secrets - never upload
+.env
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Node / React
+node_modules/
+frontend/dist/
+
+# Editor and OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
