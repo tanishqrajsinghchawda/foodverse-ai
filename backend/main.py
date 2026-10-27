@@ -164,3 +164,14 @@ coach (object: consistency, suggestions (list of 3), message)."""
     plan["protein_target_g"] = protein
     plan["hydration_liters"] = water
     return plan
+
+
+
+from fastapi.responses import FileResponse
+
+FRONTEND_FILE = os.path.join(os.path.dirname(__file__), "..", "frontend", "index.html")
+
+
+@app.get("/")
+def index():
+    return FileResponse(FRONTEND_FILE)

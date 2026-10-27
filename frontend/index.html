@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FoodVerse AI</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+<style>
+:root{--bg:#0b1220;--panel:#111a2e;--line:#1f2b47;--text:#e8eefc;--muted:#8a97b5;--green:#10b981;--orange:#f97316;--blue:#3b82f6;--purple:#6366f1;--red:#ef4444}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.app{display:flex;min-height:100vh}
+.side{width:230px;background:#0d1526;border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;margin:0 8px 22px}
+.logo i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#10b981,#06b6d4);display:inline-block}
+.nav{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;color:var(--muted);padding:10px 12px;border-radius:10px;margin-bottom:6px;font-size:14px;cursor:pointer;transition:.2s}
+.nav:hover{color:var(--text);background:var(--panel)}
+.nav.on{color:var(--green);background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.25)}
+.main{flex:1;padding:28px 34px;max-width:1150px;animation:fade .4s ease}
+h1{margin:0 0 4px;font-size:28px} h2{margin:2px 0 8px;font-size:24px} h3{margin:0 0 10px;font-size:16px}
+.sub{color:var(--muted);margin:0 0 22px;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.form2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.fade{animation:fade .5s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{opacity:.5}}
+.hero{background:linear-gradient(120deg,#065f46,#0b1a2e 70%);border:1px solid var(--line);border-radius:20px;padding:42px;margin-bottom:22px}
+.hero h1{font-size:40px} .hero h1 span{color:#34d399}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.mod{cursor:pointer;transition:.25s} .mod:hover{transform:translateY(-4px);border-color:var(--green)}
+.ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
+.drop{display:block;border:2px dashed var(--line);border-radius:16px;min-height:200px;cursor:pointer;margin-bottom:16px;overflow:hidden;background:var(--panel);transition:.2s}
+.drop:hover{border-color:var(--green)}
+.drop img{width:100%;max-height:320px;object-fit:contain;display:block}
+.dropin{height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted)}
+.dropin .big{font-size:30px;color:var(--green)}
+.lbl{font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;display:block;margin:10px 0 6px;font-weight:600}
+input,select,textarea{width:100%;background:#0d1526;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font:inherit;font-size:14px}
+textarea{min-height:80px;resize:vertical}
+.btn{width:100%;padding:13px;border:0;border-radius:12px;background:var(--green);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:.2s}
+.btn:hover:not(:disabled){filter:brightness(1.15);transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.mic{margin-top:8px;background:#16213a;border:1px solid var(--line);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-size:13px}
+.mic.rec{border-color:var(--red);color:var(--red);animation:pulse 1s infinite}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ring{width:70px;height:70px;border-radius:50%;border:4px solid var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:20px;flex-shrink:0}
+.ring small{font-size:9px;color:var(--muted);font-weight:500}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.stat{background:#16213a;border-radius:12px;padding:12px}
+.stat b{display:block;font-size:20px} .stat small{color:var(--muted);font-size:11px;text-transform:uppercase}
+.tag{display:inline-block;background:#16213a;border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:12px;margin:0 6px 6px 0}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.alert{background:#16213a;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.empty{text-align:center;color:var(--muted);padding:60px 20px;border:2px dashed var(--line);border-radius:16px}
+.empty .big{font-size:42px;margin-bottom:8px}
+.loader{width:34px;height:34px;border:4px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:50px auto}
+.err{background:rgba(239,68,68,.1);border:1px solid var(--red);color:#fca5a5;border-radius:12px;padding:14px;font-size:14px}
+.meal{border-bottom:1px solid var(--line);padding:14px 0}.meal:last-child{border:0}
+.kc{color:#a5b4fc;font-weight:800;font-size:18px}
+.note{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px}
+ol,ul{padding-left:20px;line-height:1.7;font-size:14px}
+.big3{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:16px}
+@media(max-width:850px){.app{flex-direction:column}.side{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;gap:4px}.logo{width:100%}.nav{width:auto}.grid2{grid-template-columns:1fr}.main{padding:18px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+/* ---------- helpers ---------- */
+async function post(path, body, isJson) {
+  const res = await fetch(path, isJson
+    ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+    : { method: "POST", body });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Request failed (" + res.status + ")");
+  return data;
+}
+
+function useRun() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [data, setData] = useState(null);
+  const run = async (fn) => {
+    setLoading(true); setError(""); setData(null);
+    try { setData(await fn()); } catch (e) { setError(e.message); }
+    setLoading(false);
+  };
+  return { loading, error, data, run };
+}
+
+const color = (s) => ({ SAFE: "#10b981", CAUTION: "#f97316", UNSAFE: "#ef4444", HIGH: "#ef4444", MEDIUM: "#f97316", LOW: "#eab308" }[String(s).toUpperCase()] || "#10b981");
+
+/* ---------- shared components ---------- */
+function FileDrop({ file, onFile, accept = "image/*", label = "Upload Image" }) {
+  const isImg = file && file.type.startsWith("image");
+  const url = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
+  return (
+    <label className="drop">
+      <input type="file" accept={accept} hidden onChange={(e) => onFile(e.target.files[0] || null)} />
+      {file
+        ? (isImg ? <img src={url} alt="preview" /> : <div className="dropin"><div className="big">🎬</div><b>{file.name}</b><small>Click to change</small></div>)
+        : <div className="dropin"><div className="big">⬆</div><b>{label}</b><small>Click to browse</small></div>}
+    </label>
+  );
+}
+
+function Mic({ onText }) {
+  const [on, setOn] = useState(false);
+  const start = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return alert("Voice input works in Chrome or Edge.");
+    const r = new SR(); r.lang = "en-IN";
+    r.onresult = (e) => onText(e.results[0][0].transcript);
+    r.onend = () => setOn(false);
+    r.onerror = () => setOn(false);
+    setOn(true); r.start();
+  };
+  return <button type="button" className={"mic" + (on ? " rec" : "")} onClick={start}>🎤 {on ? "Listening..." : "Speak"}</button>;
+}
+
+const Loader = () => <div className="loader" />;
+const ErrorBox = ({ msg }) => <div className="err">⚠ {msg}</div>;
+const Empty = ({ icon, text, hint }) => <div className="empty"><div className="big">{icon}</div><b>{text}</b><p>{hint}</p></div>;
+const Stat = ({ l, v }) => <div className="stat"><b>{v}</b><small>{l}</small></div>;
+
+function Result({ loading, error, data, icon, text, hint, children }) {
+  if (loading) return <Loader />;
+  if (error) return <ErrorBox msg={error} />;
+  if (!data) return <Empty icon={icon} text={text} hint={hint} />;
+  return <div className="fade">{children}</div>;
+}
+
+/* ---------- pages ---------- */
+const MODULES = [
+  { id: "food", name: "Food Recognition", desc: "Identify dishes & nutrition", icon: "🍽", bg: "#10b981" },
+  { id: "fresh", name: "Freshness Detector", desc: "Detect spoilage instantly", icon: "🌡", bg: "#f97316" },
+  { id: "hygiene", name: "Hygiene Monitor", desc: "Kitchen compliance AI", icon: "🛡", bg: "#3b82f6" },
+  { id: "kitchen", name: "Smart Kitchen", desc: "Recipes from ingredients", icon: "👨‍🍳", bg: "#6366f1" },
+  { id: "meal", name: "Meal Planner", desc: "Personalized diet plans", icon: "📅", bg: "#06b6d4" },
+];
+
+function Home({ go }) {
+  return (<div>
+    <div className="hero"><h1>Welcome to <span>FoodVerse AI</span></h1>
+      <p className="sub" style={{ margin: 0 }}>A unified multimodal AI platform revolutionizing the food lifecycle from farm to fork.</p></div>
+    <div className="cards">
+      {MODULES.map((m) => (
+        <div key={m.id} className="card mod" onClick={() => go(m.id)}>
+          <div className="ico" style={{ background: m.bg }}>{m.icon}</div>
+          <b>{m.name}</b><p className="sub" style={{ margin: "4px 0 0", fontSize: 13 }}>{m.desc}</p>
+        </div>))}
+    </div>
+  </div>);
+}
+
+function FoodRecognition() {
+  const [file, setFile] = useState(null);
+  const [desc, setDesc] = useState("");
+  const { loading, error, data, run } = useRun();
+  const go = () => {
+    const fd = new FormData(); fd.append("image", file); fd.append("description", desc);
+    run(() => post("/api/food-recognition", fd));
+  };
+  return (<div>
+    <h1>Multimodal Food Lens ✨</h1><p className="sub">Combine Image + Voice + Text for the most accurate nutrition AI.</p>
+    <div className="grid2">
+      <div>
+        <FileDrop file={file} onFile={setFile} label="Upload Food Image" />
+        <div className="card"><span className="lbl" style={{ marginTop: 0 }}>Add context (optional)</span>
+          <textarea placeholder="What is this? Any goals?" value={desc} onChange={(e) => setDesc(e.target.value)} />
+          <Mic onText={(t) => setDesc((d) => (d + " " + t).trim())} />
+        </div>
+        <button className="btn" disabled={!file || loading} onClick={go}>{loading ? "Analyzing..." : "Analyze Meal"}</button>
+      </div>
+      <Result loading={loading} error={error} data={data} icon="🍽" text="Ready for Analysis" hint="Upload a photo to get nutrition insights.">
+        {data && <div className="card">
+          <div className="row"><div><span className="lbl" style={{ margin: 0, color: "#34d399" }}>Identified dish</span><h2>{data.dish_name}</h2></div>
+            <div className="ring">{data.health_score}<small>SCORE</small></div></div>
+          <div className="stats"><Stat l="Calories" v={data.calories + " kcal"} /><Stat l="Protein" v={data.protein_g + "g"} />
+            <Stat l="Carbs" v={data.carbs_g + "g"} /><Stat l="Fats" v={data.fats_g + "g"} /></div>
+          <span className="lbl">Health evaluation</span><p style={{ fontSize: 14, lineHeight: 1.6 }}>{data.health_evaluation}</p>
+          <span className="lbl">Smart AI recommendations</span>
+          <ul>{(data.recommendations || []).map((r, i) => <li key={i}>{r}</li>)}</ul>
+        </div>}
+      </Result>
+    </div>
+  </div>);
+}
+
+function Freshness() {
+  const [file, setFile] = useState(null);
+  const [days, setDays] = useState("");
+  const [storage, setStorage] = useState("Room Temp");
+  const [notes, setNotes] = useState("");
+  const { loading, error, data, run } = useRun();
+  const go = () => {
+    const fd = new FormData(); fd.append("image", file); fd.append("stored_for", days);
+    fd.append("storage_type", storage); fd.append("sensory_notes", notes);
+    run(() => post("/api/freshness", fd));
+  };
+  return (<div>
+    <h1>🌡 AI Freshness Detector</h1><p className="sub">Detect spoilage early using multimodal vision & sensory analysis.</p>
+    <div className="grid2">
+      <div>
+        <FileDrop file={file} onFile={setFile} label="Upload Photo of Food" />
+        <div className="card"><h3>Context & Sensory Data</h3>
+          <div className="form2">
+            <div><span className="lbl">Stored for</span><input placeholder="e.g. 3 days" value={days} onChange={(e) => setDays(e.target.value)} /></div>
+            <div><span className="lbl">Storage type</span><select value={storage} onChange={(e) => setStorage(e.target.value)}>
+              <option>Room Temp</option><option>Refrigerator</option><option>Freezer</option></select></div>
+          </div>
+          <span className="lbl">Smell / texture (optional)</span>
+          <textarea placeholder="Sour smell, slimy..." value={notes} onChange={(e) => setNotes(e.target.value)} />
+          <Mic onText={(t) => setNotes((d) => (d + " " + t).trim())} />
+        </div>
+        <button className="btn" style={{ background: "var(--orange)" }} disabled={!file || loading} onClick={go}>{loading ? "Checking..." : "Check Freshness"}</button>
+      </div>
+      <Result loading={loading} error={error} data={data} icon="🌡" text="Ready to Analyze" hint="Upload an image to get a freshness report.">
+        {data && <div className="card" style={{ textAlign: "center" }}>
+          <span className="lbl">Detection result</span><h2>{data.food_name}</h2>
+          <span className="pill" style={{ background: color(data.safety_status) + "33", color: color(data.safety_status) }}>{data.status} · Confidence {data.confidence}%</span>
+          <div className="card" style={{ margin: "16px 0", borderColor: color(data.safety_status) }}>
+            <span className="lbl" style={{ margin: 0 }}>Safety status</span>
+            <h2 style={{ color: color(data.safety_status), margin: 4 }}>{data.safety_status}</h2></div>
+          <div style={{ textAlign: "left" }}>
+            <span className="lbl">Detected signs</span>{(data.detected_signs || []).map((s, i) => <span className="tag" key={i}>{s}</span>)}
+            <span className="lbl">AI reasoning</span><p style={{ fontSize: 14, lineHeight: 1.6 }}>{data.reasoning}</p>
+            <p style={{ color: "#fdba74", fontSize: 14 }}>💡 Advice: {data.advice}</p></div>
+        </div>}
+      </Result>
+    </div>
+  </div>);
+}
+
+function Hygiene() {
+  const [file, setFile] = useState(null);
+  const [rules, setRules] = useState("Gloves mandatory. Hairnets required. No text on phone.");
+  const { loading, error, data, run } = useRun();
+  const go = () => {
+    const fd = new FormData(); fd.append("file", file); fd.append("rules", rules);
+    run(() => post("/api/hygiene", fd));
+  };
+  const download = () => {
+    const txt = "FoodVerse AI - Hygiene Report\n\nOverall score: " + data.overall_score + "\nFloor cleanliness: " + data.floor_cleanliness +
+      "\n\nAlerts:\n" + (data.alerts || []).map((a) => "- [" + a.severity + "] " + a.title + " (" + a.location + "): " + a.evidence).join("\n") +
+      "\n\nSummary: " + data.summary;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([txt], { type: "text/plain" })); a.download = "hygiene_report.txt"; a.click();
+  };
+  return (<div>
+    <div className="row"><div><h1>🛡 Hygiene & Safety Monitor</h1><p className="sub">AI-powered surveillance for kitchen compliance and safety risks.</p></div>
+      {data && <button className="mic" onClick={download}>⬇ Download Report</button>}</div>
+    <div className="grid2">
+      <div>
+        <FileDrop file={file} onFile={setFile} accept="image/*,video/*" label="Upload CCTV Footage or Image" />
+        <div className="card"><span className="lbl" style={{ marginTop: 0 }}>Compliance rules</span>
+          <textarea value={rules} onChange={(e) => setRules(e.target.value)} /></div>
+        <button className="btn" style={{ background: "var(--blue)" }} disabled={!file || loading} onClick={go}>{loading ? "Inspecting..." : "Run AI Inspection"}</button>
+      </div>
+      <Result loading={loading} error={error} data={data} icon="👁" text="Monitoring Inactive" hint="Upload footage to start analysis.">
+        {data && <div className="card"><h3>LIVE INSIGHTS</h3>
+          <div className="stats"><Stat l="Overall score" v={data.overall_score} /><Stat l="Floor cleanliness" v={data.floor_cleanliness} /></div>
+          <span className="lbl">Real-time alerts</span>
+          {(data.alerts || []).length === 0 && <p style={{ color: "#34d399" }}>✔ No violations detected.</p>}
+          {(data.alerts || []).map((a, i) => <div className="alert" key={i}>
+            <div className="row"><b>{a.title}</b><span className="pill" style={{ background: color(a.severity), color: "#fff" }}>{a.severity}</span></div>
+            <small style={{ color: "var(--muted)" }}>📍 {a.location}</small><div className="note">"{a.evidence}"</div></div>)}
+          <span className="lbl">AI summary</span><p style={{ fontSize: 14, lineHeight: 1.6 }}>{data.summary}</p>
+        </div>}
+      </Result>
+    </div>
+  </div>);
+}
+
+function SmartKitchen() {
+  const [file, setFile] = useState(null);
+  const [desc, setDesc] = useState("");
+  const { loading, error, data, run } = useRun();
+  const go = () => {
+    const fd = new FormData(); fd.append("description", desc); if (file) fd.append("image", file);
+    run(() => post("/api/recipe", fd));
+  };
+  return (<div>
+    <div style={{ textAlign: "center" }}><h1>👨‍🍳 Smart Recipe Generator</h1><p className="sub">Describe your ingredients or upload a photo to get a full recipe.</p></div>
+    <div className="grid2">
+      <div className="card"><span className="lbl" style={{ marginTop: 0 }}>Describe dish / ingredients</span>
+        <textarea style={{ minHeight: 160 }} placeholder="e.g. I have chicken, rice, and tomatoes. What can I make?" value={desc} onChange={(e) => setDesc(e.target.value)} />
+        <Mic onText={(t) => setDesc((d) => (d + " " + t).trim())} /></div>
+      <FileDrop file={file} onFile={setFile} label="Click to Upload Photo" />
+    </div>
+    <button className="btn" style={{ background: "linear-gradient(90deg,#f97316,#ef4444)", maxWidth: 260, display: "block", margin: "0 auto 20px" }}
+      disabled={(!file && !desc) || loading} onClick={go}>{loading ? "Cooking up..." : "Generate Recipe →"}</button>
+    <Result loading={loading} error={error} data={data}>
+      {data && <div className="card"><div className="row"><h2>{data.title}</h2><span className="tag">⏱ {data.cook_time}</span></div>
+        <div className="grid2"><div><h3>Ingredients</h3><ul>{(data.ingredients || []).map((x, i) => <li key={i}>{x}</li>)}</ul></div>
+          <div><h3>Preparation Steps</h3><ol>{(data.steps || []).map((x, i) => <li key={i}>{x}</li>)}</ol></div></div></div>}
+    </Result>
+  </div>);
+}
+
+function MealPlanner() {
+  const [f, setF] = useState({ age: 25, gender: "Female", height_cm: 165, weight_kg: 60, activity_level: "Moderate",
+    goal: "Maintenance", diet_type: "Standard", cuisine: "Global", allergies: "", medical_conditions: "", food_history: "" });
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  const { loading, error, data, run } = useRun();
+  const go = () => run(() => post("/api/meal-plan", { ...f, age: +f.age, height_cm: +f.height_cm, weight_kg: +f.weight_kg }, true));
+  const Sel = ({ k, opts }) => <select value={f[k]} onChange={set(k)}>{opts.map((o) => <option key={o}>{o}</option>)}</select>;
+  return (<div>
+    <h1>📅 AI Personalized Meal Planner</h1><p className="sub">Powered by Qwen 3.8 on Groq • Personalized Nutrition Plans</p>
+    <div className="grid2" style={{ gridTemplateColumns: "320px 1fr" }}>
+      <div className="card"><h3>👤 Your Profile</h3>
+        <div className="form2">
+          <div><span className="lbl">Age</span><input type="number" value={f.age} onChange={set("age")} /></div>
+          <div><span className="lbl">Gender</span><Sel k="gender" opts={["Female", "Male"]} /></div>
+          <div><span className="lbl">Height (cm)</span><input type="number" value={f.height_cm} onChange={set("height_cm")} /></div>
+          <div><span className="lbl">Weight (kg)</span><input type="number" value={f.weight_kg} onChange={set("weight_kg")} /></div>
+        </div>
+        <span className="lbl">Activity level</span><Sel k="activity_level" opts={["Sedentary", "Light", "Moderate", "Active", "Very Active"]} />
+        <span className="lbl">Primary goal</span><Sel k="goal" opts={["Weight Loss", "Maintenance", "Muscle Gain"]} />
+        <div className="form2">
+          <div><span className="lbl">Diet type</span><Sel k="diet_type" opts={["Standard", "Vegetarian", "Vegan", "Jain", "Keto"]} /></div>
+          <div><span className="lbl">Cuisine</span><Sel k="cuisine" opts={["Global", "Indian", "Mediterranean", "Asian"]} /></div>
+        </div>
+        <span className="lbl">Allergies (critical)</span><input placeholder="e.g. Peanuts, Dairy" value={f.allergies} onChange={set("allergies")} />
+        <span className="lbl">Medical conditions</span><input placeholder="e.g. Diabetes, PCOS" value={f.medical_conditions} onChange={set("medical_conditions")} />
+        <span className="lbl">Recent food history</span><input placeholder="What did you eat today?" value={f.food_history} onChange={set("food_history")} />
+        <button className="btn" style={{ marginTop: 16, background: "linear-gradient(90deg,#6366f1,#8b5cf6)" }} disabled={loading} onClick={go}>{loading ? "Planning..." : "Generate AI Plan"}</button>
+      </div>
+      <Result loading={loading} error={error} data={data} icon="🍴" text="Ready to Plan Your Nutrition?" hint="Fill in your details and generate your plan.">
+        {data && <div>
+          <div className="big3"><Stat l="Daily calories (target)" v={data.daily_calories} /><Stat l="Protein (g)" v={data.protein_target_g} />
+            <Stat l="Hydration (L)" v={data.hydration_liters} /><Stat l="Consistency" v={data.coach && data.coach.consistency} /></div>
+          <div className="card"><h3>🍴 Today's Detailed Plan</h3>
+            {(data.meals || []).map((m, i) => <div className="meal" key={i}>
+              <div className="row"><div><span className="tag">{m.type}</span><b>{m.name}</b></div><span className="kc">{m.calories} kcal</span></div>
+              <p style={{ fontSize: 13, color: "var(--muted)", margin: "6px 0" }}>{m.description}</p>
+              {(m.ingredients || []).map((x, j) => <span className="tag" key={j}>{x}</span>)}
+              <div className="note">P: {m.protein_g}g · C: {m.carbs_g}g · F: {m.fats_g}g — {m.note}</div></div>)}
+          </div>
+          <div className="grid2">
+            <div className="card"><h3>📅 Weekly Overview</h3>{(data.weekly_overview || []).map((d, i) =>
+              <p key={i} style={{ fontSize: 13, margin: "8px 0" }}><span className="tag">{d.day}</span>{d.summary}</p>)}</div>
+            <div className="card"><h3>📈 AI Coach Report</h3><span className="lbl">Adaptive suggestions</span>
+              <ul>{((data.coach && data.coach.suggestions) || []).map((s, i) => <li key={i}>{s}</li>)}</ul>
+              <div className="note">"{data.coach && data.coach.message}"</div></div>
+          </div>
+        </div>}
+      </Result>
+    </div>
+  </div>);
+}
+
+/* ---------- app shell ---------- */
+const NAV = [{ id: "home", name: "Overview", icon: "▦" }, ...MODULES.map((m) => ({ id: m.id, name: m.name, icon: m.icon }))];
+const VIEWS = { home: Home, food: FoodRecognition, fresh: Freshness, hygiene: Hygiene, kitchen: SmartKitchen, meal: MealPlanner };
+
+function App() {
+  const [page, setPage] = useState("home");
+  const View = VIEWS[page];
+  return (<div className="app">
+    <aside className="side">
+      <div className="logo"><i /> FoodVerse</div>
+      {NAV.map((n) => <button key={n.id} className={"nav" + (page === n.id ? " on" : "")} onClick={() => setPage(n.id)}>{n.icon}&nbsp; {n.name}</button>)}
+    </aside>
+    <main className="main" key={page}><View go={setPage} /></main>
+  </div>);
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
